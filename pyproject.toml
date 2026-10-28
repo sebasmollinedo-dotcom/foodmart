@@ -1,0 +1,61 @@
+[build-system]
+requires = [
+    "setuptools",
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+requires-python = ">=3.10"
+name = "foodmart"
+readme = "README.md"
+dynamic = [
+    "version",
+]
+dependencies = [
+    "kedro~=1.7.0",
+    "kedro-datasets[pandas-excelsdataset,pandas-csvdataset]",
+    "openpyxl",
+    "scikit-learn",
+]
+
+[project.optional-dependencies]
+dev = ["pytest", "ruff"]
+
+[project.scripts]
+foodmart = "foodmart.__main__:main"
+
+[project.entry-points."kedro.hooks"]
+
+[tool.setuptools.dynamic.version]
+attr = "foodmart.__version__"
+
+[tool.setuptools.packages.find]
+where = [
+    "src",
+]
+namespaces = false
+
+[tool.kedro]
+package_name = "foodmart"
+project_name = "foodmart"
+kedro_init_version = "1.7.0"
+tools = "['None']"
+example_pipeline = "False"
+source_dir = "src"
+
+[tool.ruff]
+line-length = 100
+extend-exclude = ["notebooks", "recapitulacion del semestre"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "D"]
+ignore = ["D100", "D104", "D203", "D213"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["D"]
+"src/foodmart/pipelines/*/pipeline.py" = ["D103"]
+"src/foodmart/__main__.py" = ["D"]
+"src/foodmart/settings.py" = ["D"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]

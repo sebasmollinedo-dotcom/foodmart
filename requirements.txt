@@ -1,0 +1,6 @@
+kedro~=1.7.0
+kedro-datasets[pandas-excelsdataset,pandas-csvdataset]
+openpyxl
+scikit-learn
+pytest
+ruff

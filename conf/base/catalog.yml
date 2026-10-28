@@ -1,0 +1,39 @@
+# Datos crudos (hoja "Stores-Data" del Excel de FoodMart)
+stores_raw:
+  type: pandas.ExcelDataset
+  filepath: data/01_raw/StoresData.xlsx
+  load_args:
+    sheet_name: Stores-Data
+
+stores_clean:
+  type: pandas.CSVDataset
+  filepath: data/02_intermediate/stores_clean.csv
+
+X_train:
+  type: pandas.CSVDataset
+  filepath: data/05_model_input/X_train.csv
+X_test:
+  type: pandas.CSVDataset
+  filepath: data/05_model_input/X_test.csv
+y_train:
+  type: pandas.CSVDataset
+  filepath: data/05_model_input/y_train.csv
+y_test:
+  type: pandas.CSVDataset
+  filepath: data/05_model_input/y_test.csv
+
+models:
+  type: pickle.PickleDataset
+  filepath: data/06_models/models.pkl
+
+metrics:
+  type: pandas.CSVDataset
+  filepath: data/08_reporting/metrics.csv
+  save_args:
+    index: false
+
+feature_importance:
+  type: pandas.CSVDataset
+  filepath: data/08_reporting/feature_importance.csv
+  save_args:
+    index: false

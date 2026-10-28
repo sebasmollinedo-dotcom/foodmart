@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Utilidad Bruta en FoodMart</title>
+<style>
+  :root {
+    --ink: #1c2530;
+    --muted: #5d6b7a;
+    --line: #d9dee4;
+    --paper: #ffffff;
+    --bg: #eef1f4;
+    --navy: #1f3a56;
+    --accent: #c8553d;
+    --soft: #e3e9ef;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; background: var(--bg); overflow: hidden; }
+  body { font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif; color: var(--ink); }
+
+  /* Lienzo fijo de 1920x1080 que se ajusta a cualquier pantalla */
+  #slide {
+    width: 1920px; height: 1080px; position: absolute; left: 50%; top: 50%;
+    transform-origin: center center; background: var(--paper);
+    display: grid; grid-template-rows: 128px 1fr; overflow: hidden;
+  }
+  header {
+    background: var(--navy); color: #fff; padding: 0 56px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  header h1 { font-size: 50px; font-weight: 700; letter-spacing: -0.5px; line-height: 1.1; }
+  header p { font-size: 24px; opacity: .85; margin-top: 8px; }
+  .team { text-align: right; font-size: 22px; line-height: 1.45; opacity: .95; }
+  .team b { font-weight: 600; }
+
+  main {
+    display: grid; grid-template-columns: 1fr 1.25fr 1fr; gap: 28px;
+    padding: 20px 36px 24px;
+  }
+  .col { display: flex; flex-direction: column; gap: 16px; min-height: 0; }
+  .card { border: 2px solid var(--line); border-radius: 14px; padding: 16px 22px; background: #fff; }
+  .card.fill { flex: 1; }
+  h2 {
+    font-size: 24px; text-transform: uppercase; letter-spacing: 1.6px; color: var(--navy);
+    margin-bottom: 10px; display: flex; align-items: center; gap: 12px;
+  }
+  h2 .n {
+    width: 36px; height: 36px; border-radius: 50%; background: var(--navy); color: #fff;
+    display: inline-flex; align-items: center; justify-content: center; font-size: 20px; letter-spacing: 0;
+  }
+  .q { font-size: 28px; line-height: 1.3; font-weight: 600; }
+  .q em { color: var(--accent); font-style: normal; }
+  .sub { font-size: 20px; color: var(--muted); margin-top: 8px; line-height: 1.35; }
+
+  /* Datos */
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; text-align: center; }
+  .stat b { display: block; font-size: 42px; color: var(--navy); line-height: 1; }
+  .stat span { font-size: 18px; color: var(--muted); line-height: 1.2; display: block; margin-top: 6px; }
+
+  /* Metodología */
+  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .step { background: var(--soft); border-radius: 10px; padding: 20px 6px; text-align: center;
+    font-size: 21px; font-weight: 600; color: var(--navy); line-height: 1.2; }
+  .step small { display: block; font-weight: 400; color: var(--muted); font-size: 17px; margin-top: 3px; }
+
+  /* Centro */
+  .hero { text-align: center; }
+  .hero .big { font-size: 88px; font-weight: 800; color: var(--accent); line-height: 1; letter-spacing: -2px; }
+  .hero .big small { font-size: 40px; font-weight: 700; letter-spacing: 0; }
+  .hero p { font-size: 24px; margin-top: 6px; line-height: 1.3; }
+  .chart-title { font-size: 20px; color: var(--muted); margin: 6px 0 2px; text-align: center; }
+  svg text { font-family: inherit; fill: var(--ink); }
+
+  .model { display: flex; align-items: center; gap: 18px; }
+  .badge { background: var(--navy); color: #fff; border-radius: 12px; padding: 12px 22px;
+    font-size: 34px; font-weight: 700; }
+  .model p { font-size: 22px; color: var(--muted); line-height: 1.3; }
+  .bars { margin-top: 10px; }
+  .row { display: grid; grid-template-columns: 190px 1fr 92px; align-items: center; gap: 10px; margin: 5px 0; font-size: 20px; }
+  .track { background: var(--soft); border-radius: 6px; height: 24px; }
+  .fillbar { height: 100%; border-radius: 6px; background: #9aa8b7; }
+  .fillbar.win { background: var(--accent); }
+  .row b { text-align: right; font-size: 22px; }
+  .metrics { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 8px; text-align: center; }
+  .metrics div { background: var(--soft); border-radius: 10px; padding: 10px 4px; }
+  .metrics b { font-size: 28px; color: var(--navy); display: block; line-height: 1.05; }
+  .metrics span { font-size: 17px; color: var(--muted); }
+
+  /* Derecha */
+  .recs { list-style: none; }
+  .recs li { display: flex; gap: 14px; align-items: flex-start; font-size: 22px; line-height: 1.3; margin: 10px 0; }
+  .recs li i { flex: none; width: 34px; height: 34px; border-radius: 8px; background: var(--accent); color: #fff;
+    font-style: normal; font-weight: 700; display: flex; align-items: center; justify-content: center; font-size: 19px; }
+  .lims { display: grid; gap: 8px; }
+  .lims div { font-size: 21px; line-height: 1.3; padding-left: 18px; position: relative; }
+  .lims div::before { content: ""; position: absolute; left: 0; top: 10px; width: 8px; height: 8px; border-radius: 50%; background: var(--muted); }
+  .arch { display: flex; align-items: stretch; gap: 8px; }
+  .node { flex: 1; background: var(--soft); border-radius: 10px; padding: 22px 6px; text-align: center;
+    font-size: 20px; font-weight: 600; color: var(--navy); line-height: 1.2; }
+  .node small { display: block; font-weight: 400; color: var(--muted); font-size: 15px; margin-top: 3px; }
+  .arrow { align-self: center; color: var(--muted); font-size: 24px; }
+  .tags { display: flex; gap: 10px; margin-top: 16px; }
+  .tag { flex: 1; border: 2px solid var(--navy); border-radius: 10px; padding: 16px 8px; text-align: center; font-size: 18px; color: var(--navy); font-weight: 600; }
+</style>
+</head>
+<body>
+<div id="slide">
+  <header>
+    <div>
+      <h1>¿Qué determina la utilidad de una tienda FoodMart?</h1>
+      <p>Machine Learning aplicado a la expansión de una cadena de supermercados</p>
+    </div>
+    <div class="team">
+      <b>Luis Pedro González · Sebastian Mollinedo</b><br>
+      Universidad Francisco Marroquín<br>
+      Machine Learning for Business
+    </div>
+  </header>
+
+  <main>
+    <!-- Columna izquierda -->
+    <section class="col">
+      <div class="card">
+        <h2><span class="n">1</span>El problema</h2>
+        <div class="q">¿Qué factores explican la <em>utilidad bruta</em> de una tienda y podemos predecirla?</div>
+        <div class="sub">Para la Dirección de Operaciones y Expansión, que decide dónde abrir tiendas.</div>
+      </div>
+
+      <div class="card">
+        <h2><span class="n">2</span>Los datos</h2>
+        <div class="stats">
+          <div class="stat"><b>150</b><span>tiendas</span></div>
+          <div class="stat"><b>26</b><span>variables</span></div>
+          <div class="stat"><b>2014</b><span>un año</span></div>
+          <div class="stat"><b>0</b><span>faltantes o duplicados</span></div>
+        </div>
+        <div class="sub">Se excluyeron ventas y salarios, porque son resultados y no decisiones.</div>
+      </div>
+
+      <div class="card fill">
+        <h2><span class="n">3</span>Cómo lo hicimos</h2>
+        <div class="steps">
+          <div class="step">Negocio<small>pregunta y métrica</small></div>
+          <div class="step">Datos<small>exploración</small></div>
+          <div class="step">Limpieza<small>atípicos y variables</small></div>
+          <div class="step">Modelos<small>línea base, Ridge, Random Forest</small></div>
+          <div class="step">Evaluación<small>30 tiendas de prueba</small></div>
+          <div class="step">Entrega<small>Kedro y GitHub</small></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Columna central -->
+    <section class="col">
+      <div class="card hero">
+        <h2 style="justify-content:center"><span class="n">4</span>Lo que descubrimos</h2>
+        <div class="big">−$340 mil</div>
+        <p>de utilidad (ganancia) por <b>cada competidor nuevo</b> cerca</p>
+        <div class="chart-title">Más competidores cerca, menos ganancia</div>
+        <svg viewBox="0 0 640 270" width="100%" style="height:250px" role="img" aria-label="Utilidad promedio por número de competidores">
+          <g stroke="#d9dee4" stroke-width="1">
+            <line x1="40" y1="20" x2="630" y2="20"/><line x1="40" y1="70" x2="630" y2="70"/>
+            <line x1="40" y1="120" x2="630" y2="120"/><line x1="40" y1="170" x2="630" y2="170"/>
+            <line x1="40" y1="220" x2="630" y2="220" stroke="#5d6b7a"/>
+          </g>
+          <g font-size="16" text-anchor="end">
+            <text x="32" y="225">0</text><text x="32" y="175">0.5</text><text x="32" y="125">1.0</text><text x="32" y="75">1.5</text>
+          </g>
+          <g fill="#1f3a56">
+            <rect x="52"  y="55"  width="56" height="165"/>
+            <rect x="124" y="77"  width="56" height="143"/>
+            <rect x="196" y="105" width="56" height="115"/>
+            <rect x="268" y="140" width="56" height="80"/>
+            <rect x="340" y="156" width="56" height="64"/>
+            <rect x="412" y="198" width="56" height="22" fill="#c8553d"/>
+            <rect x="484" y="195" width="56" height="25" fill="#c8553d"/>
+            <rect x="556" y="212" width="56" height="8"  fill="#c8553d"/>
+          </g>
+          <g font-size="17" text-anchor="middle">
+            <text x="80"  y="243">0</text><text x="152" y="243">1</text><text x="224" y="243">2</text>
+            <text x="296" y="243">3</text><text x="368" y="243">4</text><text x="440" y="243">5</text>
+            <text x="512" y="243">6</text><text x="584" y="243">7</text>
+          </g>
+          <text x="335" y="266" font-size="16" text-anchor="middle" style="fill:#5d6b7a">Competidores cerca de la tienda</text>
+          <g font-size="17" font-weight="700" text-anchor="middle">
+            <text x="80" y="48">$1.66 millones</text><text x="458" y="190" fill="#c8553d">$0.22 millones</text>
+          </g>
+        </svg>
+      </div>
+
+      <div class="card fill">
+        <h2><span class="n">5</span>Qué tan bien predice</h2>
+        <div class="model">
+          <div class="badge">Ridge</div>
+          <p>Probamos 3 formas de predecir. Ganó la <b>más simple</b>.</p>
+        </div>
+        <div class="chart-title" style="text-align:left;margin-top:12px">Error al predecir la utilidad, menos es mejor</div>
+        <div class="bars">
+          <div class="row"><span>Adivinar promedio</span><div class="track"><div class="fillbar" style="width:100%"></div></div><b>$434 mil</b></div>
+          <div class="row"><span>Random Forest</span><div class="track"><div class="fillbar" style="width:82%"></div></div><b>$354 mil</b></div>
+          <div class="row"><span><b style="text-align:left;font-size:20px">Ridge, el elegido</b></span><div class="track"><div class="fillbar win" style="width:79%"></div></div><b>$344 mil</b></div>
+        </div>
+        <div class="metrics" style="grid-template-columns:1fr 1fr">
+          <div><b>1 de cada 3</b><span>diferencias entre tiendas explicadas</span></div>
+          <div><b>21% menos</b><span>de error que adivinar</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Columna derecha -->
+    <section class="col">
+      <div class="card">
+        <h2><span class="n">6</span>Qué recomendamos</h2>
+        <ul class="recs">
+          <li><i>1</i><span>Antes de abrir una tienda, revisar <b>cuántos competidores hay cerca</b>.</span></li>
+          <li><i>2</i><span>Usar el modelo para <b>comparar opciones</b>, no para adivinar cifras exactas.</span></li>
+          <li><i>3</i><span><b>Probar en pocas tiendas</b> antes de gastar más en publicidad u horarios.</span></li>
+          <li><i>4</i><span><b>Juntar más datos</b>, de más tiendas y más años.</span></li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h2><span class="n">7</span>Con qué cuidado leerlo</h2>
+        <div class="lims">
+          <div><b>Pocos datos.</b> Solo 150 tiendas y un año, además son inventados.</div>
+          <div><b>Acierta a medias.</b> Otros factores también pesan.</div>
+          <div><b>Relación no es causa.</b> Hay relación, pero no se prueba que quitar un competidor suba la ganancia.</div>
+        </div>
+      </div>
+
+      <div class="card fill">
+        <h2><span class="n">8</span>Cómo está construido</h2>
+        <div class="arch">
+          <div class="node">Excel<small>150 tiendas</small></div><div class="arrow">›</div>
+          <div class="node">1. Limpiar<small>los datos</small></div><div class="arrow">›</div>
+          <div class="node">2. Entrenar<small>los modelos</small></div><div class="arrow">›</div>
+          <div class="node">3. Evaluar<small>y guardar</small></div>
+        </div>
+        <div class="tags">
+          <div class="tag">Un solo comando<br><span style="font-weight:400;font-size:16px">kedro run corre todo</span></div>
+          <div class="tag">Revisión automática<br><span style="font-weight:400;font-size:16px">GitHub revisa el código solo</span></div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+  // Ajusta la lámina de 1920x1080 a cualquier pantalla, sin scroll
+  function fit() {
+    var s = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+    document.getElementById("slide").style.transform = "translate(-50%, -50%) scale(" + s + ")";
+  }
+  window.addEventListener("resize", fit);
+  fit();
+</script>
+</body>
+</html>
