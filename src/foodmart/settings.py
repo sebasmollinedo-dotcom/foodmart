@@ -3,10 +3,10 @@ from the Kedro defaults. For further information, including these default values
 https://docs.kedro.org/en/stable/configure/configuration_basics/#configuration"""
 
 # Instantiated project hooks.
-# For example, after creating a hooks.py and defining a ProjectHooks class there, do
-# from foodmart.hooks import ProjectHooks
 # Hooks are executed in a Last-In-First-Out (LIFO) order.
-# HOOKS = (ProjectHooks(),)
+from foodmart.hooks import OpenReportHook
+
+HOOKS = (OpenReportHook(),)
 
 # Installed plugins for which to disable hook auto-registration.
 # DISABLE_HOOKS_FOR_PLUGINS = ("kedro-viz",)

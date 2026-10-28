@@ -10,8 +10,14 @@ categorical: [location, state]
 # Outliers: se recortan los features a [Q1 - k*IQR, Q3 + k*IQR]
 outlier_iqr_factor: 1.5
 
-# Modelo elegido (ver README): baseline_media | ridge | random_forest
-final_model: ridge
+# Modelo elegido (ver README): baseline_media | regresion_simple | ridge | random_forest
+final_model: regresion_simple
+
+# Variables que usa la regresión simple (el EDA: competidores explica casi toda la utilidad)
+simple_features: [competitors]
+
+# Umbral (en $ millones) para clasificar una tienda como de "alta utilidad" (F1, matriz)
+profitable_threshold: 1.0
 
 test_size: 0.2
 random_state: 42

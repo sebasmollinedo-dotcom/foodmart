@@ -37,3 +37,24 @@ feature_importance:
   filepath: data/08_reporting/feature_importance.csv
   save_args:
     index: false
+
+classification_metrics:
+  type: pandas.CSVDataset
+  filepath: data/08_reporting/classification_metrics.csv
+  save_args:
+    index: false
+
+confusion_matrix:
+  type: pandas.CSVDataset
+  filepath: data/08_reporting/confusion_matrix.csv
+  save_args:
+    index: false
+
+eda_summary:
+  type: json.JSONDataset
+  filepath: data/08_reporting/eda_summary.json
+
+# Reporte final (se abre solo en el navegador al terminar `kedro run`)
+report_html:
+  type: text.TextDataset
+  filepath: data/08_reporting/reporte.html

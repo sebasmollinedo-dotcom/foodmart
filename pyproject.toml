@@ -56,6 +56,9 @@ ignore = ["D100", "D104", "D203", "D213"]
 "src/foodmart/pipelines/*/pipeline.py" = ["D103"]
 "src/foodmart/__main__.py" = ["D"]
 "src/foodmart/settings.py" = ["D"]
+"src/foodmart/pipelines/evaluation/report.py" = ["E501"]  # plantilla HTML/CSS
+"src/foodmart/pipelines/evaluation/report_assets.py" = ["E501"]  # CSS/JS del reporte
+"src/foodmart/pipelines/evaluation/icons.py" = ["E501"]  # SVG de Lucide
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]

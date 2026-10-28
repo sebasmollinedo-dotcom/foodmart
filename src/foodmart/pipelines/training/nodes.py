@@ -3,7 +3,7 @@ import pandas as pd
 from sklearn.compose import ColumnTransformer
 from sklearn.dummy import DummyRegressor
 from sklearn.ensemble import RandomForestRegressor
-from sklearn.linear_model import Ridge
+from sklearn.linear_model import LinearRegression, Ridge
 from sklearn.model_selection import GridSearchCV, train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
@@ -47,15 +47,16 @@ def _preprocessor(X: pd.DataFrame, categorical: list, scale: bool) -> ColumnTran
 
 
 def train_models(X_train: pd.DataFrame, y_train: pd.DataFrame, params: dict) -> dict:
-    """Entrena la línea base (media), una regresión Ridge y un Random Forest.
+    """Entrena la línea base (media), una regresión simple, una regresión Ridge y un Random Forest.
 
     Args:
         X_train: Features de entrenamiento.
         y_train: Objetivo de entrenamiento (una columna).
-        params: Parámetros (categorical, random_state, rf_param_grid, cv_folds).
+        params: Parámetros (categorical, simple_features, random_state, rf_param_grid, cv_folds).
 
     Returns:
-        dict: Modelos entrenados, con llaves baseline_media, ridge y random_forest.
+        dict: Modelos entrenados, con llaves baseline_media, regresion_simple, ridge y
+        random_forest.
 
     """
     y = y_train.iloc[:, 0]
@@ -64,6 +65,12 @@ def train_models(X_train: pd.DataFrame, y_train: pd.DataFrame, params: dict) -> 
 
     baseline = Pipeline([("prep", _preprocessor(X_train, cat, False)),
                          ("model", DummyRegressor(strategy="mean"))])
+    # Regresión lineal que usa solo las variables de `simple_features` (el EDA muestra que
+    # competidores concentra casi toda la señal); el resto de columnas se descarta.
+    simple = Pipeline([
+        ("prep", ColumnTransformer([("sel", "passthrough", params["simple_features"])])),
+        ("model", LinearRegression()),
+    ])
     ridge = Pipeline([("prep", _preprocessor(X_train, cat, True)),
                       ("model", Ridge(alpha=1.0))])
     forest = GridSearchCV(
@@ -73,7 +80,8 @@ def train_models(X_train: pd.DataFrame, y_train: pd.DataFrame, params: dict) -> 
         cv=params["cv_folds"], scoring="neg_root_mean_squared_error",
     )
 
-    models = {"baseline_media": baseline, "ridge": ridge, "random_forest": forest}
+    models = {"baseline_media": baseline, "regresion_simple": simple, "ridge": ridge,
+              "random_forest": forest}
     for model in models.values():
         model.fit(X_train, y)
     return models
