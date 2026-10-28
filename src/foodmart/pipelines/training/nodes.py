@@ -6,7 +6,7 @@ import pandas as pd
 from sklearn.compose import ColumnTransformer
 from sklearn.dummy import DummyRegressor
 from sklearn.ensemble import RandomForestRegressor
-from sklearn.linear_model import LinearRegression, Ridge
+from sklearn.linear_model import Ridge
 from sklearn.model_selection import GridSearchCV, RepeatedKFold, cross_val_score, train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
@@ -98,7 +98,7 @@ def select_features(X_train: pd.DataFrame, y_train: pd.DataFrame, params: dict):
 def train_models(
     X_train: pd.DataFrame, y_train: pd.DataFrame, params: dict, selected_features: list
 ) -> dict:
-    """Entrena la línea base, una regresión simple, dos regresiones Ridge y un Random Forest.
+    """Entrena la línea base, dos regresiones Ridge y un Random Forest.
 
     Args:
         X_train: Features de entrenamiento.
@@ -107,8 +107,8 @@ def train_models(
         selected_features: Variables elegidas por ``select_features``.
 
     Returns:
-        dict: Modelos entrenados, con llaves baseline_media, regresion_simple, ridge,
-        ridge_compacto y random_forest.
+        dict: Modelos entrenados, con llaves baseline_media, ridge, ridge_compacto
+        y random_forest.
 
     """
     y = y_train.iloc[:, 0]
@@ -118,12 +118,6 @@ def train_models(
 
     baseline = Pipeline([("prep", _preprocessor(allc, cat, False)),
                          ("model", DummyRegressor(strategy="mean"))])
-    # Regresión lineal que usa solo las variables de `simple_features` (el EDA muestra que
-    # competidores concentra casi toda la señal); el resto de columnas se descarta.
-    simple = Pipeline([
-        ("prep", ColumnTransformer([("sel", "passthrough", params["simple_features"])])),
-        ("model", LinearRegression()),
-    ])
     ridge = Pipeline([("prep", _preprocessor(allc, cat, True)),
                       ("model", Ridge(alpha=1.0))])
     ridge_compacto = Pipeline([("prep", _preprocessor(list(selected_features), cat, True)),
@@ -135,7 +129,7 @@ def train_models(
         cv=params["cv_folds"], scoring="neg_root_mean_squared_error",
     )
 
-    models = {"baseline_media": baseline, "regresion_simple": simple, "ridge": ridge,
+    models = {"baseline_media": baseline, "ridge": ridge,
               "ridge_compacto": ridge_compacto, "random_forest": forest}
     for model in models.values():
         model.fit(X_train, y)

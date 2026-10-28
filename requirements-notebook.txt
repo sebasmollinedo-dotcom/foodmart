@@ -1,0 +1,5 @@
+# Dependencias extra para ejecutar notebooks/eda.ipynb (el pipeline no las necesita)
+-r requirements.txt
+matplotlib
+seaborn
+jupyter

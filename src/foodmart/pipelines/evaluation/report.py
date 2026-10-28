@@ -188,7 +188,7 @@ def _process(eda: dict, params: dict) -> str:
         ("sparkles", "Limpieza", "Nombres en snake_case, sin duplicados ni filas sin objetivo, outliers recortados con IQR."),
         ("layers", "Variables", "Se crea <code>basket_growth_pct</code>; se excluyen ventas, salarios e ID."),
         ("percent", "Partición", f"{sp['train']} tiendas para entrenar y {sp['test']} para probar (80/20, semilla {params['random_state']})."),
-        ("scale", "Modelos", f"Línea base, regresión simple, Ridge y Random Forest ({combos} combinaciones × {params['cv_folds']} folds)."),
+        ("scale", "Modelos", f"Línea base, Ridge, Ridge compacto y Random Forest ({combos} combinaciones × {params['cv_folds']} folds)."),
         ("target", "Evaluación", "MAE, RMSE y R²; F1 y matriz de confusión; importancia por permutación."),
         ("receipt", "Reporte", "Esta página, generada por <code>kedro run</code>."),
     ]
@@ -228,9 +228,9 @@ El código de limpieza maneja ambos casos, por si llegan datos nuevos.</div>
     out.append(_acc("users", "La competencia lo explica casi todo", f"""
 <label class="chk"><input type="checkbox" id="c-pts" checked> Tiendas</label>
 <label class="chk"><input type="checkbox" id="c-avg" checked> Promedio por grupo</label>
-<label class="chk"><input type="checkbox" id="c-mod" checked> Recta del modelo</label>
+<label class="chk"><input type="checkbox" id="c-mod" checked> Recta de ajuste simple</label>
 <div id="sc"></div>
-<p class="note">Cada punto es una tienda (pasa el mouse). Línea negra: promedio por número de competidores; línea roja punteada: el modelo.</p>
+<p class="note">Cada punto es una tienda (pasa el mouse). Línea negra: promedio por número de competidores; línea roja punteada: recta de ajuste simple.</p>
 <div class="find"><b>Cada competidor adicional resta ≈ ${abs(comp['slope']) * 1000:.0f} mil</b>
 (utilidad ≈ {comp['intercept']:.2f} − {abs(comp['slope']):.3f} × competidores) y esa sola variable explica el <b>{comp['r2']:.0%}</b> de la variación.</div>""", True))
 
@@ -273,10 +273,10 @@ y en el análisis de efectos se omiten <code>hrstrading</code> y <code>basket_20
 no decisiones, y por eso quedan fuera.</div>"""))
 
     out.append(_acc("scale", "¿Cuánto aportan las demás variables?", f"""
-<div class="find">Con validación cruzada ({cv['splits']} particiones), la regresión con <b>solo competidores</b> logra un R² de
-<b>{cv['r2_simple']:.2f}</b> frente a <b>{cv['r2_ridge']:.2f}</b> del Ridge con todas las variables, y gana en
-<b>{cv['simple_wins']:.0%}</b> de las particiones. Las demás variables no aportan señal medible con solo {q['rows']} tiendas.</div>
-<p class="note">Ojo: el modelo simple se eligió después de ver estos mismos datos, así que la ventaja es orientativa y no una prueba definitiva.</p>
+<div class="find">Con validación cruzada ({cv['splits']} particiones), el modelo final (<code>{params['final_model']}</code>, con pocas variables) logra un R² de
+<b>{cv['r2_final']:.2f}</b> frente a <b>{cv['r2_ridge']:.2f}</b> del Ridge con todas las variables, y gana en
+<b>{cv['final_wins']:.0%}</b> de las particiones. Las demás variables no aportan señal medible con solo {q['rows']} tiendas.</div>
+<p class="note">Ojo: el modelo compacto se eligió después de ver estos mismos datos, así que la ventaja es orientativa y no una prueba definitiva.</p>
 <p class="note">EDA completo, con todos los gráficos: <code>notebooks/eda.html</code>.</p>"""))
     return "".join(out)
 
@@ -288,7 +288,6 @@ def _models(eda: dict, metrics: pd.DataFrame, cv_metrics: pd.DataFrame, final: s
     sel = ", ".join(f"<code>{escape(v)}</code>" for v in selected)
     cards = [
         ("package", "baseline_media", "Predice siempre la media de la utilidad: el piso que cualquier modelo debe superar."),
-        ("trending-down", "regresion_simple", "Una recta de la utilidad contra el número de competidores. Fácil de explicar y sin sobreajuste."),
         ("layers", "ridge", "Regresión lineal con todas las variables estandarizadas y penalización (alpha = 1); ayuda con la colinealidad."),
         ("sparkles", "ridge_compacto", f"Ridge con las variables que eligió la selección hacia adelante (solo con las tiendas de entrenamiento): {sel}."),
         ("workflow", "random_forest", f"Conjunto de árboles; hiperparámetros elegidos con GridSearchCV ({combos} combinaciones × {params['cv_folds']} folds)."),

@@ -1,5 +1,7 @@
 # FoodMart – ¿Qué hace exitosa a una tienda?
 
+**Repositorio:** https://github.com/sebasmollinedo-dotcom/foodmart
+
 Proyecto 1 de Machine Learning for Business (CRISP-DM + Kedro).
 Dataset: [FoodMart (Kaggle)](https://www.kaggle.com/datasets/dermisfit/foodmart-dataset) – 150 supermercados de una cadena ficticia australiana (`data/01_raw/StoresData.xlsx`, hoja `Stores-Data`).
 
@@ -37,9 +39,15 @@ python -m venv .venv
 source .venv/bin/activate          # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 
-kedro run          # corre todo el pipeline
+kedro run          # corre todo el pipeline y abre el reporte HTML
 pytest             # pruebas
 ruff check .       # calidad de código
+```
+
+Para ejecutar el notebook del EDA (`notebooks/eda.ipynb`) se necesitan dependencias extra que el pipeline no usa:
+
+```bash
+pip install -r requirements-notebook.txt
 ```
 
 Resultados en `data/08_reporting/`:
@@ -69,7 +77,7 @@ Al terminar `kedro run` se genera `data/08_reporting/reporte.html` y se abre en 
 2. **Outliers**: recorte por IQR (1.5×) solo en features continuos.
 3. **Feature engineering**: `basket_growth_pct` (variación % de la canasta 2013→2014).
 4. **Selección de variables**: hacia adelante con validación cruzada repetida, usando solo las tiendas de entrenamiento. Se detiene cuando una variable nueva no mejora el R² en al menos 0.003.
-5. **Modelos**: línea base (media), regresión simple (solo competidores), Ridge con todas las variables, Ridge compacto (variables seleccionadas) y Random Forest con `GridSearchCV`.
+5. **Modelos**: línea base (media), Ridge con todas las variables, Ridge compacto (variables seleccionadas) y Random Forest con `GridSearchCV`.
 6. **Evaluación**: split 80/20 y validación cruzada repetida (5 particiones, 10 repeticiones) sobre las 150 tiendas, porque 30 tiendas de prueba dan métricas muy variables.
 7. **Análisis de negocio**: regresión múltiple con intervalos bootstrap para medir el efecto de cada variable y comparación de tiendas exitosas (cuarto superior de utilidad) contra el resto.
 
@@ -78,12 +86,11 @@ Al terminar `kedro run` se genera `data/08_reporting/reporte.html` y se abre en 
 | Modelo | R² (CV, 150 tiendas) | MAE (CV) | R² (prueba, 30 tiendas) |
 |---|---|---|---|
 | baseline_media | -0.042 | 0.520 | -0.002 |
-| regresion_simple (solo competidores) | 0.479 | 0.321 | 0.271 |
 | ridge (todas las variables) | 0.355 | 0.385 | 0.336 |
 | **ridge_compacto** | **0.475** | **0.322** | 0.210 |
 | random_forest | 0.412 | 0.353 | 0.212 |
 
-**Modelo final: Ridge compacto** (competidores y apertura en domingo). Empata en validación cruzada con la regresión simple de solo competidores (0.475 contra 0.479, dentro del ruido) y es mucho mejor que usar todas las variables. La apertura en domingo entra por una ganancia mínima (R² de 0.508 a 0.512) y su efecto no es distinguible de cero, así que la regresión simple es una alternativa igual de válida y todavía más sencilla. En las 30 tiendas de prueba el Ridge con todas las variables quedó por encima, pero con una prueba tan pequeña la diferencia cae dentro del ruido (la desviación del R² entre particiones es de unos 0.15). Agregar más variables empeora la predicción porque la mayoría solo aporta ruido.
+**Modelo final: Ridge compacto** (competidores y apertura en domingo). Es el mejor en validación cruzada y el más simple de explicar. La apertura en domingo entra por una ganancia mínima (R² de 0.508 a 0.512) y su efecto no es distinguible de cero; casi todo el poder predictivo viene del número de competidores. En las 30 tiendas de prueba el Ridge con todas las variables quedó por encima, pero con una prueba tan pequeña la diferencia cae dentro del ruido (la desviación del R² entre particiones es de unos 0.15). Agregar más variables empeora la predicción porque la mayoría solo aporta ruido.
 
 ### Vista complementaria: ¿alta o baja utilidad? (F1 y matriz de confusión)
 
@@ -91,7 +98,6 @@ La utilidad es un número continuo, así que la métrica principal es de regresi
 
 | Modelo | Exactitud | Precisión | Recall | F1 |
 |---|---|---|---|---|
-| regresion_simple | 0.85 | 0.81 | 0.92 | 0.86 |
 | ridge (todas las variables) | 0.82 | 0.75 | 0.93 | 0.83 |
 | **ridge_compacto** | **0.85** | **0.81** | **0.92** | **0.86** |
 | random_forest | 0.85 | 0.81 | 0.90 | 0.85 |

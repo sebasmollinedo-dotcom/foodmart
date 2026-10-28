@@ -20,6 +20,7 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = ["pytest", "ruff"]
+notebook = ["matplotlib", "seaborn", "jupyter"]
 
 [project.scripts]
 foodmart = "foodmart.__main__:main"

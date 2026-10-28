@@ -143,17 +143,17 @@ def _vif(df: pd.DataFrame) -> list[dict]:
 
 
 def _cv_comparison(models: dict, stores_clean: pd.DataFrame, params: dict) -> dict:
-    """Compara regresión simple y Ridge con validación cruzada repetida (5 folds × 10)."""
+    """Compara el modelo final con el Ridge de todas las variables (validación cruzada 5×10)."""
     X = stores_clean.drop(columns=[params["target"]])
     y = stores_clean[params["target"]]
     cv = RepeatedKFold(n_splits=5, n_repeats=10, random_state=params["random_state"])
     r2 = {name: cross_val_score(clone(models[name]), X, y, cv=cv, scoring="r2")
-          for name in ("regresion_simple", "ridge")}
-    diff = r2["regresion_simple"] - r2["ridge"]
+          for name in (params["final_model"], "ridge")}
+    diff = r2[params["final_model"]] - r2["ridge"]
     return {
-        "r2_simple": float(r2["regresion_simple"].mean()),
+        "r2_final": float(r2[params["final_model"]].mean()),
         "r2_ridge": float(r2["ridge"].mean()),
-        "simple_wins": float((diff > 0).mean()),
+        "final_wins": float((diff > 0).mean()),
         "splits": int(len(diff)),
     }
 

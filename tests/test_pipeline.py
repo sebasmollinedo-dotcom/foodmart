@@ -20,7 +20,6 @@ PARAMS = {
     "target": "gross_profit",
     "drop_columns": ["store_no", "sales_m", "wages_m"],
     "categorical": ["location", "state"],
-    "simple_features": ["competitors"],
     "final_model": "ridge_compacto",
     "importance_model": "random_forest",
     "profitable_threshold": 1.0,
@@ -86,9 +85,8 @@ def test_split_and_train(raw):
     assert 1 <= len(selected) <= X_train.shape[1]
     assert set(selected) <= set(X_train.columns)
     assert list(log["paso"]) == list(range(1, len(selected) + 1))
-    assert set(models) == {"baseline_media", "regresion_simple", "ridge", "ridge_compacto",
-                           "random_forest"}
-    for name in ("ridge", "ridge_compacto", "regresion_simple"):
+    assert set(models) == {"baseline_media", "ridge", "ridge_compacto", "random_forest"}
+    for name in ("ridge", "ridge_compacto"):
         assert len(models[name].predict(X_test)) == len(X_test)
 
 
@@ -154,7 +152,7 @@ def test_classification_and_report(raw):
     clean, X_train, X_test, _, y_test, selected, log, models = _trained(raw)
 
     cls, cm = evaluate_classification(models, clean, PARAMS)
-    assert set(cls["modelo"]) == {"regresion_simple", "ridge", "ridge_compacto", "random_forest"}
+    assert set(cls["modelo"]) == {"ridge", "ridge_compacto", "random_forest"}
     scores = cls[["accuracy", "precision", "recall", "F1"]]
     assert scores.apply(lambda c: c.between(0, 1)).all().all()
     assert cm[["pred_baja", "pred_alta"]].to_numpy().sum() == len(clean)
