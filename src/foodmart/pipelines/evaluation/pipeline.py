@@ -2,13 +2,20 @@
 from kedro.pipeline import Pipeline, node
 
 from .eda import summarize_eda
-from .nodes import evaluate_classification, evaluate_models, explain_model
+from .nodes import (
+    cross_validate_models,
+    evaluate_classification,
+    evaluate_models,
+    explain_model,
+)
 from .report import build_report
 
 
 def create_pipeline(**kwargs) -> Pipeline:
     return Pipeline([
         node(evaluate_models, ["models", "X_test", "y_test"], "metrics", name="evaluate_models"),
+        node(cross_validate_models, ["models", "stores_clean", "parameters"],
+             "cv_metrics", name="cross_validate_models"),
         node(explain_model, ["models", "X_test", "y_test", "parameters"],
              "feature_importance", name="explain_model"),
         node(evaluate_classification, ["models", "stores_clean", "parameters"],
@@ -17,7 +24,8 @@ def create_pipeline(**kwargs) -> Pipeline:
              ["stores_raw", "stores_clean", "models", "X_train", "X_test", "parameters"],
              "eda_summary", name="summarize_eda"),
         node(build_report,
-             ["stores_clean", "eda_summary", "metrics", "feature_importance",
+             ["stores_clean", "eda_summary", "metrics", "cv_metrics", "feature_selection",
+              "driver_effects", "success_profile", "success_by_competition",
               "classification_metrics", "confusion_matrix", "parameters"],
              "report_html", name="build_report"),
     ])

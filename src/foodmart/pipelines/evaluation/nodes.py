@@ -15,7 +15,7 @@ from sklearn.metrics import (
     r2_score,
     recall_score,
 )
-from sklearn.model_selection import KFold, cross_val_predict
+from sklearn.model_selection import KFold, RepeatedKFold, cross_val_predict, cross_validate
 
 logger = logging.getLogger(__name__)
 
@@ -47,26 +47,66 @@ def evaluate_models(models: dict, X_test: pd.DataFrame, y_test: pd.DataFrame) ->
     return metrics
 
 
+def cross_validate_models(models: dict, df: pd.DataFrame, params: dict) -> pd.DataFrame:
+    """Evalúa cada modelo con validación cruzada repetida sobre todas las tiendas.
+
+    Con solo 30 tiendas de prueba las métricas son muy variables, por eso se repite la
+    evaluación muchas veces sobre las 150 tiendas para tener una cifra más estable.
+
+    Args:
+        models: Diccionario de modelos entrenados.
+        df: Tabla limpia de tiendas, incluye el objetivo.
+        params: Parámetros (target, eval_cv_repeats, random_state).
+
+    Returns:
+        pd.DataFrame: Una fila por modelo con el promedio y la desviación del R2 y los errores.
+
+    """
+    X = df.drop(columns=[params["target"]])
+    y = df[params["target"]]
+    cv = RepeatedKFold(n_splits=5, n_repeats=params["eval_cv_repeats"],
+                       random_state=params["random_state"])
+    scoring = {"mae": "neg_mean_absolute_error", "rmse": "neg_root_mean_squared_error",
+               "r2": "r2"}
+    rows = []
+    for name, model in models.items():
+        estimator = clone(model.best_estimator_ if hasattr(model, "best_estimator_") else model)
+        res = cross_validate(estimator, X, y, cv=cv, scoring=scoring)
+        rows.append({
+            "modelo": name,
+            "MAE": -res["test_mae"].mean(),
+            "RMSE": -res["test_rmse"].mean(),
+            "R2": res["test_r2"].mean(),
+            "R2_desviacion": res["test_r2"].std(),
+        })
+    out = pd.DataFrame(rows).round(3)
+    logger.info("Validación cruzada:\n%s", out.to_string(index=False))
+    return out
+
+
 def explain_model(
     models: dict, X_test: pd.DataFrame, y_test: pd.DataFrame, params: dict
 ) -> pd.DataFrame:
-    """Calcula la importancia por permutación del modelo final.
+    """Calcula la importancia por permutación de un modelo.
 
-    Mide cuánto cae el R2 al desordenar cada variable.
+    Mide cuánto cae el R2 al desordenar cada variable. Se usa el Random Forest porque
+    puede detectar cualquier relación, así se comprueba que ninguna otra variable pesa.
+    Ojo: con variables muy correlacionadas (competidores y horas) el crédito se reparte entre
+    ellas, así que para medir el efecto de cada una conviene ``driver_effects``.
 
     Args:
         models: Diccionario de modelos entrenados.
         X_test: Features de prueba.
         y_test: Objetivo de prueba (una columna).
-        params: Parámetros (final_model, random_state).
+        params: Parámetros (importance_model, random_state).
 
     Returns:
         pd.DataFrame: Variables ordenadas de mayor a menor importancia.
 
     """
     result = permutation_importance(
-        models[params["final_model"]], X_test, y_test.iloc[:, 0],
-        n_repeats=20, random_state=params["random_state"],
+        models[params["importance_model"]], X_test, y_test.iloc[:, 0],
+        n_repeats=30, random_state=params["random_state"],
     )
     out = pd.DataFrame({"variable": X_test.columns, "caida_r2": result.importances_mean})
     return out.sort_values("caida_r2", ascending=False).round(4)

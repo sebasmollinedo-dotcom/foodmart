@@ -22,6 +22,10 @@ y_test:
   type: pandas.CSVDataset
   filepath: data/05_model_input/y_test.csv
 
+selected_features:
+  type: pickle.PickleDataset
+  filepath: data/06_models/selected_features.pkl
+
 models:
   type: pickle.PickleDataset
   filepath: data/06_models/models.pkl
@@ -35,6 +39,36 @@ metrics:
 feature_importance:
   type: pandas.CSVDataset
   filepath: data/08_reporting/feature_importance.csv
+  save_args:
+    index: false
+
+feature_selection:
+  type: pandas.CSVDataset
+  filepath: data/08_reporting/feature_selection.csv
+  save_args:
+    index: false
+
+cv_metrics:
+  type: pandas.CSVDataset
+  filepath: data/08_reporting/cv_metrics.csv
+  save_args:
+    index: false
+
+driver_effects:
+  type: pandas.CSVDataset
+  filepath: data/08_reporting/driver_effects.csv
+  save_args:
+    index: false
+
+success_profile:
+  type: pandas.CSVDataset
+  filepath: data/08_reporting/success_profile.csv
+  save_args:
+    index: false
+
+success_by_competition:
+  type: pandas.CSVDataset
+  filepath: data/08_reporting/success_by_competition.csv
   save_args:
     index: false
 

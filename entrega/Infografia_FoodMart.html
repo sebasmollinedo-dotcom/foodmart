@@ -60,7 +60,7 @@
 
   /* Metodología */
   .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-  .step { background: var(--soft); border-radius: 10px; padding: 20px 6px; text-align: center;
+  .step { background: var(--soft); border-radius: 10px; padding: 14px 6px; text-align: center;
     font-size: 21px; font-weight: 600; color: var(--navy); line-height: 1.2; }
   .step small { display: block; font-weight: 400; color: var(--muted); font-size: 17px; margin-top: 3px; }
 
@@ -89,27 +89,42 @@
 
   /* Derecha */
   .recs { list-style: none; }
-  .recs li { display: flex; gap: 14px; align-items: flex-start; font-size: 22px; line-height: 1.3; margin: 10px 0; }
+  .recs li { display: flex; gap: 12px; align-items: flex-start; font-size: 21px; line-height: 1.25; margin: 7px 0; }
   .recs li i { flex: none; width: 34px; height: 34px; border-radius: 8px; background: var(--accent); color: #fff;
     font-style: normal; font-weight: 700; display: flex; align-items: center; justify-content: center; font-size: 19px; }
   .lims { display: grid; gap: 8px; }
   .lims div { font-size: 21px; line-height: 1.3; padding-left: 18px; position: relative; }
   .lims div::before { content: ""; position: absolute; left: 0; top: 10px; width: 8px; height: 8px; border-radius: 50%; background: var(--muted); }
   .arch { display: flex; align-items: stretch; gap: 8px; }
-  .node { flex: 1; background: var(--soft); border-radius: 10px; padding: 22px 6px; text-align: center;
+  .node { flex: 1; background: var(--soft); border-radius: 10px; padding: 14px 6px; text-align: center;
     font-size: 20px; font-weight: 600; color: var(--navy); line-height: 1.2; }
   .node small { display: block; font-weight: 400; color: var(--muted); font-size: 15px; margin-top: 3px; }
   .arrow { align-self: center; color: var(--muted); font-size: 24px; }
-  .tags { display: flex; gap: 10px; margin-top: 16px; }
-  .tag { flex: 1; border: 2px solid var(--navy); border-radius: 10px; padding: 16px 8px; text-align: center; font-size: 18px; color: var(--navy); font-weight: 600; }
+  .tags { display: flex; gap: 10px; margin-top: 10px; }
+  .tag { flex: 1; border: 2px solid var(--navy); border-radius: 10px; padding: 10px 8px; text-align: center; font-size: 18px; color: var(--navy); font-weight: 600; }
+
+  /* Nuevos bloques */
+  .chips { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .chip { background: var(--soft); border-radius: 10px; padding: 9px 12px; font-size: 20px; display: flex; gap: 10px; align-items: center; }
+  .chip i { font-style: normal; color: var(--accent); font-weight: 800; font-size: 22px; }
+  .note { font-size: 20px; color: var(--ink); margin-top: 10px; line-height: 1.3; background: #fbeee9; border-left: 6px solid var(--accent); border-radius: 6px; padding: 8px 12px; }
+  .guide { display: grid; gap: 8px; margin-bottom: 10px; }
+  .g { display: grid; grid-template-columns: 130px 1fr; align-items: center; border-radius: 10px; overflow: hidden; font-size: 20px; background: var(--soft); }
+  .g > b { padding: 7px 8px; color: #fff; text-align: center; font-size: 20px; }
+  .g span { padding: 7px 12px; line-height: 1.2; }
+  .g.go > b { background: #3d7a57; } .g.mid > b { background: #c9922e; } .g.no > b { background: #b9553f; } .g.stop > b { background: #7a2f26; }
+  .model-line { margin-top: 12px; background: var(--navy); color: #fff; border-radius: 10px; padding: 12px 16px; font-size: 21px; line-height: 1.3; }
+  .model-line b { color: #ffd9cf; }
+  .row2 { display: grid; grid-template-columns: 190px 1fr 96px; align-items: center; gap: 10px; margin: 7px 0; font-size: 19px; }
+  .row2 b { text-align: right; font-size: 20px; }
 </style>
 </head>
 <body>
 <div id="slide">
   <header>
     <div>
-      <h1>¿Qué determina la utilidad de una tienda FoodMart?</h1>
-      <p>Machine Learning aplicado a la expansión de una cadena de supermercados</p>
+      <h1>¿Qué hace exitosa a una tienda FoodMart?</h1>
+      <p>Machine Learning para decidir dónde abrir y cómo operar una cadena de supermercados</p>
     </div>
     <div class="team">
       <b>Luis Pedro González · Sebastian Mollinedo</b><br>
@@ -123,7 +138,7 @@
     <section class="col">
       <div class="card">
         <h2><span class="n">1</span>El problema</h2>
-        <div class="q">¿Qué factores explican la <em>utilidad bruta</em> de una tienda y podemos predecirla?</div>
+        <div class="q">¿Qué determina la <em>utilidad</em> de una tienda y qué debe hacer la empresa para tener más tiendas exitosas?</div>
         <div class="sub">Para la Dirección de Operaciones y Expansión, que decide dónde abrir tiendas.</div>
       </div>
 
@@ -133,21 +148,21 @@
           <div class="stat"><b>150</b><span>tiendas</span></div>
           <div class="stat"><b>26</b><span>variables</span></div>
           <div class="stat"><b>2014</b><span>un año</span></div>
-          <div class="stat"><b>0</b><span>faltantes o duplicados</span></div>
+          <div class="stat"><b>38</b><span>tiendas exitosas</span></div>
         </div>
-        <div class="sub">Se excluyeron ventas y salarios, porque son resultados y no decisiones.</div>
+        <div class="sub">Exitosa es el 25% que más gana. Ventas y salarios no se usaron, porque son resultados.</div>
       </div>
 
       <div class="card fill">
-        <h2><span class="n">3</span>Cómo lo hicimos</h2>
-        <div class="steps">
-          <div class="step">Negocio<small>pregunta y métrica</small></div>
-          <div class="step">Datos<small>exploración</small></div>
-          <div class="step">Limpieza<small>atípicos y variables</small></div>
-          <div class="step">Modelos<small>línea base, Ridge, Random Forest</small></div>
-          <div class="step">Evaluación<small>30 tiendas de prueba</small></div>
-          <div class="step">Entrega<small>Kedro y GitHub</small></div>
+        <h2><span class="n">3</span>Procedimientos (CRISP-DM) </h2>
+        <div class="chart-title" style="text-align:left;margin:0 0 4px">Metodología CRISP-DM, con limpieza de atípicos y validación repetida. Error de 4 modelos, menos es mejor</div>
+        <div class="bars">
+          <div class="row2"><span>Línea base(promedio)</span><div class="track"><div class="fillbar" style="width:100%"></div></div><b>$520 mil</b></div>
+          <div class="row2"><span>Ridge, 18 variables</span><div class="track"><div class="fillbar" style="width:74%"></div></div><b>$385 mil</b></div>
+          <div class="row2"><span>Random Forest</span><div class="track"><div class="fillbar" style="width:68%"></div></div><b>$353 mil</b></div>
+          <div class="row2"><span><b style="font-size:19px">Ridge compacto</b></span><div class="track"><div class="fillbar win" style="width:62%"></div></div><b>$322 mil</b></div>
         </div>
+        <div class="model-line"><b>Más variables empeora la predicción.</b> Ridge Compacto utiliza las variables con más R². <b>SUNDAY OPEN, Competidores, HRS OPEN</b></div>
       </div>
     </section>
 
@@ -155,56 +170,52 @@
     <section class="col">
       <div class="card hero">
         <h2 style="justify-content:center"><span class="n">4</span>Lo que descubrimos</h2>
-        <div class="big">−$340 mil</div>
-        <p>de utilidad (ganancia) por <b>cada competidor nuevo</b> cerca</p>
-        <div class="chart-title">Más competidores cerca, menos ganancia</div>
-        <svg viewBox="0 0 640 270" width="100%" style="height:250px" role="img" aria-label="Utilidad promedio por número de competidores">
+        <div class="big">−$280 mil</div>
+        <p>de utilidad por <b>cada competidor nuevo</b> cerca de la tienda</p>
+        <div class="chart-title">De cada 100 tiendas, cuántas son exitosas según sus competidores cerca</div>
+        <svg viewBox="0 0 640 270" width="100%" style="height:250px" role="img" aria-label="Porcentaje de tiendas exitosas por número de competidores">
           <g stroke="#d9dee4" stroke-width="1">
-            <line x1="40" y1="20" x2="630" y2="20"/><line x1="40" y1="70" x2="630" y2="70"/>
-            <line x1="40" y1="120" x2="630" y2="120"/><line x1="40" y1="170" x2="630" y2="170"/>
-            <line x1="40" y1="220" x2="630" y2="220" stroke="#5d6b7a"/>
+            <line x1="50" y1="20" x2="630" y2="20"/><line x1="50" y1="75" x2="630" y2="75"/>
+            <line x1="50" y1="130" x2="630" y2="130"/><line x1="50" y1="185" x2="630" y2="185"/>
+            <line x1="50" y1="220" x2="630" y2="220" stroke="#5d6b7a"/>
           </g>
-          <g font-size="16" text-anchor="end">
-            <text x="32" y="225">0</text><text x="32" y="175">0.5</text><text x="32" y="125">1.0</text><text x="32" y="75">1.5</text>
+          <g font-size="15" text-anchor="end">
+            <text x="42" y="224">0%</text><text x="42" y="189">20%</text><text x="42" y="134">40%</text><text x="42" y="79">60%</text>
           </g>
+          <!-- escala, 68% = 175px de alto aprox: 2.57px por punto -->
           <g fill="#1f3a56">
-            <rect x="52"  y="55"  width="56" height="165"/>
-            <rect x="124" y="77"  width="56" height="143"/>
-            <rect x="196" y="105" width="56" height="115"/>
-            <rect x="268" y="140" width="56" height="80"/>
-            <rect x="340" y="156" width="56" height="64"/>
-            <rect x="412" y="198" width="56" height="22" fill="#c8553d"/>
-            <rect x="484" y="195" width="56" height="25" fill="#c8553d"/>
-            <rect x="556" y="212" width="56" height="8"  fill="#c8553d"/>
+            <rect x="62"  y="45"  width="54" height="175"/>
+            <rect x="136" y="96"  width="54" height="124"/>
+            <rect x="210" y="175" width="54" height="45" fill="#c9922e"/>
+            <rect x="284" y="191" width="54" height="29" fill="#c9922e"/>
+            <rect x="358" y="191" width="54" height="29" fill="#c9922e"/>
+          </g>
+          <g fill="#b9553f"><rect x="432" y="216" width="54" height="4"/><rect x="506" y="216" width="54" height="4"/><rect x="580" y="216" width="40" height="4"/></g>
+          <g font-size="17" font-weight="700" text-anchor="middle">
+            <text x="89" y="38">68%</text><text x="163" y="89">48%</text><text x="237" y="168">18%</text>
+            <text x="311" y="184">11%</text><text x="385" y="184">11%</text>
+            <text x="459" y="208" fill="#b9553f">0%</text><text x="533" y="208" fill="#b9553f">0%</text><text x="600" y="208" fill="#b9553f">0%</text>
           </g>
           <g font-size="17" text-anchor="middle">
-            <text x="80"  y="243">0</text><text x="152" y="243">1</text><text x="224" y="243">2</text>
-            <text x="296" y="243">3</text><text x="368" y="243">4</text><text x="440" y="243">5</text>
-            <text x="512" y="243">6</text><text x="584" y="243">7</text>
+            <text x="89"  y="242">0</text><text x="163" y="242">1</text><text x="237" y="242">2</text>
+            <text x="311" y="242">3</text><text x="385" y="242">4</text><text x="459" y="242">5</text>
+            <text x="533" y="242">6</text><text x="600" y="242">7</text>
           </g>
           <text x="335" y="266" font-size="16" text-anchor="middle" style="fill:#5d6b7a">Competidores cerca de la tienda</text>
-          <g font-size="17" font-weight="700" text-anchor="middle">
-            <text x="80" y="48">$1.66 millones</text><text x="458" y="190" fill="#c8553d">$0.22 millones</text>
-          </g>
         </svg>
       </div>
 
       <div class="card fill">
-        <h2><span class="n">5</span>Qué tan bien predice</h2>
-        <div class="model">
-          <div class="badge">Ridge</div>
-          <p>Probamos 3 formas de predecir. Ganó la <b>más simple</b>.</p>
+        <h2><span class="n">5</span>Lo que NO mueve la utilidad</h2>
+        <div class="chips">
+          <div class="chip"><i>✕</i>Más publicidad</div>
+          <div class="chip"><i>✕</i>Más empleados</div>
+          <div class="chip"><i>✕</i>Más estacionamiento</div>
+          <div class="chip"><i>✕</i>Entrega a domicilio</div>
+          <div class="chip"><i>✕</i>Experiencia del gerente</div>
+          <div class="chip"><i>✕</i>Abrir domingos</div>
         </div>
-        <div class="chart-title" style="text-align:left;margin-top:12px">Error al predecir la utilidad, menos es mejor</div>
-        <div class="bars">
-          <div class="row"><span>Adivinar promedio</span><div class="track"><div class="fillbar" style="width:100%"></div></div><b>$434 mil</b></div>
-          <div class="row"><span>Random Forest</span><div class="track"><div class="fillbar" style="width:82%"></div></div><b>$354 mil</b></div>
-          <div class="row"><span><b style="text-align:left;font-size:20px">Ridge, el elegido</b></span><div class="track"><div class="fillbar win" style="width:79%"></div></div><b>$344 mil</b></div>
-        </div>
-        <div class="metrics" style="grid-template-columns:1fr 1fr">
-          <div><b>1 de cada 3</b><span>diferencias entre tiendas explicadas</span></div>
-          <div><b>21% menos</b><span>de error que adivinar</span></div>
-        </div>
+        <div class="note"><b>Más horas tampoco.</b> Las tiendas con más competencia abren unas <b>12 horas más</b> por competidor, pero son las que menos ganan. El horario largo es un síntoma, no una solución.</div>
       </div>
     </section>
 
@@ -212,20 +223,25 @@
     <section class="col">
       <div class="card">
         <h2><span class="n">6</span>Qué recomendamos</h2>
+        <div class="guide">
+          <div class="g go"><b>0 a 1 comp.</b><span><b>Abrir</b>, prioridad alta</span></div>
+          <div class="g mid"><b>2 comp.</b><span><b>Evaluar</b> con cuidado</span></div>
+          <div class="g no"><b>3 a 4 comp.</b><span><b>Evitar</b>, salvo razón estratégica</span></div>
+          <div class="g stop"><b>5 o más</b><span><b>No abrir</b></span></div>
+        </div>
         <ul class="recs">
-          <li><i>1</i><span>Antes de abrir una tienda, revisar <b>cuántos competidores hay cerca</b>.</span></li>
-          <li><i>2</i><span>Usar el modelo para <b>comparar opciones</b>, no para adivinar cifras exactas.</span></li>
-          <li><i>3</i><span><b>Probar en pocas tiendas</b> antes de gastar más en publicidad u horarios.</span></li>
-          <li><i>4</i><span><b>Juntar más datos</b>, de más tiendas y más años.</span></li>
+          <li><i>1</i><span><b>Probar en pocas tiendas</b> antes de invertir más.</span></li>
+          <li><i>2</i><span><b>Revisar tiendas viejas</b>, ganan menos.</span></li>
+          <li><i>3</i><span><b>Juntar más datos</b>, como costos y clientes.</span></li>
         </ul>
       </div>
 
       <div class="card">
         <h2><span class="n">7</span>Con qué cuidado leerlo</h2>
         <div class="lims">
-          <div><b>Pocos datos.</b> Solo 150 tiendas y un año, además son inventados.</div>
-          <div><b>Acierta a medias.</b> Otros factores también pesan.</div>
-          <div><b>Relación no es causa.</b> Hay relación, pero no se prueba que quitar un competidor suba la ganancia.</div>
+          <div><b>Pocos datos.</b> 150 tiendas, un año, inventados.</div>
+          <div><b>Explica la mitad.</b> Falta información.</div>
+          <div><b>Relación no es causa.</b> Influyen otros factores.</div>
         </div>
       </div>
 
@@ -235,7 +251,7 @@
           <div class="node">Excel<small>150 tiendas</small></div><div class="arrow">›</div>
           <div class="node">1. Limpiar<small>los datos</small></div><div class="arrow">›</div>
           <div class="node">2. Entrenar<small>los modelos</small></div><div class="arrow">›</div>
-          <div class="node">3. Evaluar<small>y guardar</small></div>
+          <div class="node">3. Evaluar<small>y analizar</small></div>
         </div>
         <div class="tags">
           <div class="tag">Un solo comando<br><span style="font-weight:400;font-size:16px">kedro run corre todo</span></div>

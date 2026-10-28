@@ -10,14 +10,17 @@ categorical: [location, state]
 # Outliers: se recortan los features a [Q1 - k*IQR, Q3 + k*IQR]
 outlier_iqr_factor: 1.5
 
-# Modelo elegido (ver README): baseline_media | regresion_simple | ridge | random_forest
-final_model: regresion_simple
+# Modelo elegido (ver README): baseline_media | regresion_simple | ridge | ridge_compacto | random_forest
+final_model: ridge_compacto
 
-# Variables que usa la regresión simple (el EDA: competidores explica casi toda la utilidad)
+# Variables de la regresión simple (el EDA: competidores explica casi toda la utilidad)
 simple_features: [competitors]
 
 # Umbral (en $ millones) para clasificar una tienda como de "alta utilidad" (F1, matriz)
 profitable_threshold: 1.0
+
+# Modelo usado para la importancia por permutación (puede detectar cualquier relación)
+importance_model: random_forest
 
 test_size: 0.2
 random_state: 42
@@ -28,3 +31,31 @@ rf_param_grid:
   max_depth: [3, 5, null]
   min_samples_leaf: [2, 5]
 cv_folds: 5
+
+# Selección de variables hacia adelante (solo con las tiendas de entrenamiento)
+selection_cv_folds: 5
+selection_cv_repeats: 10
+selection_min_gain: 0.003
+
+# Validación cruzada repetida sobre las 150 tiendas
+eval_cv_repeats: 10
+
+# Análisis de negocio
+success_quantile: 0.75   # tienda exitosa = cuarto superior de utilidad
+n_bootstrap: 1000
+# Variables controlables o descriptivas. Se omiten hrstrading (correlación 0.97 con
+# competitors) y basket_2014 (casi igual a basket_2013) para evitar colinealidad.
+driver_variables:
+  - competitors
+  - sundays
+  - home_delivery
+  - adv_000
+  - age_yrs
+  - no_staff
+  - car_spaces
+  - union
+  - basket_2013
+  - mng_female
+  - mng_age
+  - mng_exp
+  - mng_train

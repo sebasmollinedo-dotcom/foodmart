@@ -14,10 +14,10 @@ a{color:var(--green2)}code{background:var(--soft);padding:1px 6px;border-radius:
 #prog{position:fixed;top:0;left:0;right:0;height:5px;z-index:60;background:color-mix(in srgb,var(--line) 60%,transparent)}
 #prog i{display:block;height:100%;width:0;background:var(--green)}
 #cart{position:fixed;top:-2px;left:0;z-index:61;color:var(--orange);transform:translateX(-50%);transition:left .1s}
-nav{position:sticky;top:5px;z-index:50;display:flex;gap:6px;align-items:center;flex-wrap:wrap;padding:8px 12px;margin:0 auto;
+nav{position:sticky;top:5px;z-index:50;display:flex;gap:3px;align-items:center;flex-wrap:wrap;padding:8px 10px;margin:0 auto;
 max-width:1080px;background:color-mix(in srgb,var(--card) 92%,transparent);backdrop-filter:blur(8px);border:1px solid var(--line);
 border-radius:14px;box-shadow:var(--shadow);font-size:14px}
-nav a{display:inline-flex;gap:5px;align-items:center;text-decoration:none;color:var(--muted);padding:5px 11px;border-radius:999px;
+nav a{display:inline-flex;gap:4px;align-items:center;text-decoration:none;color:var(--muted);padding:4px 8px;border-radius:999px;font-size:13px;
 transition:.2s}nav a:hover{color:var(--ink);background:var(--soft)}nav a.on{background:var(--green);color:#fff}
 nav .sp{flex:1}nav button{cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;
 padding:5px 10px;display:inline-flex;gap:6px;align-items:center;font:inherit}
@@ -143,6 +143,8 @@ padding:6px 14px;border-radius:999px}
 .mrow{grid-template-columns:104px 1fr 58px}.ptag b{font-size:30px}
 nav{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}nav a{white-space:nowrap}nav .sp{display:none}
 .t-l .dots{display:none}.t-l{justify-content:space-between}.ticket{padding:20px 16px 26px}}
+#fs .ic:last-child,html.fs #fs .ic:first-child{display:none}html.fs #fs .ic:last-child{display:inline}
+html:fullscreen{background:var(--bg);overflow:auto}html.fs body{font-size:18px}html.fs .shelf{padding:28px}
 @keyframes pop{from{opacity:0;transform:scale(.3)}to{opacity:1;transform:none}}
 @keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 @keyframes drop{from{opacity:0;transform:translateY(-30px)}to{opacity:1;transform:none}}
@@ -242,22 +244,43 @@ document.addEventListener('mousemove', e => { const t = e.target.closest('[data-
     $(i).addEventListener('change', e => $(g).style.display = e.target.checked ? '' : 'none'));
 })();
 
-/* Métricas de los modelos */
+/* Métricas de los modelos (validación cruzada o prueba) */
 (() => {
   const host = $('#mbars'), note = $('#mnote'), info = {
     MAE: ['Error absoluto promedio en $ millones: <b>menor es mejor</b>.', false],
     RMSE: ['Raíz del error cuadrático medio ($ millones): castiga más los errores grandes. <b>Menor es mejor</b>.', false],
     R2: ['Qué parte de la variación explica el modelo: <b>mayor es mejor</b>; 0 equivale a predecir la media.', true]};
-  const draw = k => {
-    const [txt, up] = info[k], vals = D.metrics.map(m => m[k]), top = Math.max(...vals.map(v => Math.max(v, 0)), 1e-9);
-    const best = up ? Math.max(...vals) : Math.min(...vals);
+  let src = 'cv', met = 'MAE';
+  const draw = () => {
+    const data = D[src === 'cv' ? 'cv' : 'metrics'], [txt, up] = info[met], vals = data.map(m => m[met]);
+    const top = Math.max(...vals.map(v => Math.max(v, 0)), 1e-9), best = up ? Math.max(...vals) : Math.min(...vals);
     note.innerHTML = txt;
-    host.innerHTML = D.metrics.map(m => '<div class="mrow' + (m.modelo === D.final ? ' fin' : '') + '"><span>' + m.modelo + (m[k] === best ? ' ★' : '') +
-      '</span><div class="tr"><i data-w="' + Math.max(m[k], 0) / top * 100 + '"></i></div><span>' + fmt(m[k], 3) + '</span></div>').join('');
+    host.innerHTML = data.map(m => '<div class="mrow' + (m.modelo === D.final ? ' fin' : '') + '"><span>' + m.modelo + (m[met] === best ? ' ★' : '') +
+      '</span><div class="tr"><i data-w="' + Math.max(m[met], 0) / top * 100 + '"></i></div><span>' + fmt(m[met], 3) + '</span></div>').join('');
     requestAnimationFrame(() => requestAnimationFrame(() => $$('#mbars i').forEach(i => i.style.width = i.dataset.w + '%')));
   };
-  $$('#mseg button').forEach(b => b.onclick = () => { $$('#mseg button').forEach(x => x.classList.toggle('on', x === b)); draw(b.dataset.m); });
-  draw('MAE');
+  const wire = (id, set) => $$(id + ' button').forEach(b => b.onclick = () => { $$(id + ' button').forEach(x => x.classList.toggle('on', x === b)); set(b); draw(); });
+  wire('#mseg', b => met = b.dataset.m); wire('#msrc', b => src = b.dataset.s); draw();
+})();
+
+/* Pantalla completa y modo presentación */
+(() => {
+  const b = $('#fs'), root = document.documentElement;
+  if (!root.requestFullscreen) { b.style.display = 'none'; return; }
+  const toggle = () => document.fullscreenElement ? document.exitFullscreen() : root.requestFullscreen().catch(() => {});
+  b.onclick = toggle;
+  document.addEventListener('fullscreenchange', () => root.classList.toggle('fs', !!document.fullscreenElement));
+  document.addEventListener('keydown', e => {
+    if (e.target.matches('input, textarea') || e.ctrlKey || e.metaKey || e.altKey) return;
+    if (e.key === 'f' || e.key === 'F') { toggle(); return; }
+    if (document.fullscreenElement && (e.key === 'ArrowRight' || e.key === 'ArrowLeft')) {
+      const as = $$('.aisle'); let cur = -1;
+      as.forEach((a, i) => { if (a.getBoundingClientRect().top <= 120) cur = i; });
+      const next = cur + (e.key === 'ArrowRight' ? 1 : -1);
+      next < 0 ? scrollTo({top: 0}) : as[Math.min(as.length - 1, next)].scrollIntoView({block: 'start'});
+      e.preventDefault();
+    }
+  });
 })();
 
 /* Matriz de confusión */
